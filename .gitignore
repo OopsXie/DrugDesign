@@ -1,0 +1,18 @@
+# 忽略 2GB 的 PyTorch 安装包
+AlphaDrug-main/wheel/
+*.whl
+
+# 忽略 400 多个实验权重文件
+AlphaDrug-main/experiment/
+*.pt
+
+# 忽略大型数据集
+AlphaDrug-main/data/train-val-data.tsv
+
+# 忽略工具类中的压缩数据
+AlphaDrug-main/utils/*.gz
+AlphaDrug-main/utils/*.model.gz
+
+# 忽略 Python 缓存
+__pycache__/
+*.pyc
