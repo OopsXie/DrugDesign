@@ -1,11 +1,3 @@
-'''
-Author: QHGG
-Date: 2021-11-17 18:24:36
-LastEditTime: 2022-08-22 17:01:09
-LastEditors: QHGG
-Description: lmser transformer
-FilePath: /AlphaDrug/model/CMFTgo.py
-'''
 import copy
 import torch
 import math
@@ -35,10 +27,18 @@ class MFT(nn.Module):
         self.d_norm = nn.LayerNorm(d_model)
 
         self.linear = nn.Linear(d_model, smi_voc_len)
-        self.valueLinear1 = nn.Linear(d_model, smi_voc_len)
-        self.valueLinear2 = nn.Linear(smi_voc_len, 1)
-        self.coordsLinear1 = nn.Linear(d_model, 32)
-        self.coordsLinear2 = nn.Linear(32, 3)
+        
+        # Multi-task learning heads (optional - can be enabled for auxiliary tasks)
+        self.use_value_prediction = False  # Set to True to enable value function learning
+        self.use_coords_prediction = False  # Set to True to enable 3D coordinate prediction
+        
+        if self.use_value_prediction:
+            self.valueLinear1 = nn.Linear(d_model, smi_voc_len)
+            self.valueLinear2 = nn.Linear(smi_voc_len, 1)
+        
+        if self.use_coords_prediction:
+            self.coordsLinear1 = nn.Linear(d_model, 32)
+            self.coordsLinear2 = nn.Linear(32, 3)
 
         self._reset_parameters()
 
@@ -47,8 +47,11 @@ class MFT(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def forward(self, src, tgt, smiMask, proMask, tgt_mask):
-        tgt_mask = tgt_mask.squeeze(0)
+    def forward(self, src, tgt, smiMask, proMask, tgt_mask, return_value=False, return_coords=False):
+        # Handle tgt_mask shape - ensure it's 2D
+        if tgt_mask.dim() == 3:
+            tgt_mask = tgt_mask.squeeze(0)
+        
         src = self.proEmbedding(src)
         src = self.proPE(src)
         src = src.permute(1, 0, 2)
@@ -61,6 +64,8 @@ class MFT(nn.Module):
         tgt_key_padding_mask = ~(smiMask.to(torch.bool))
         memory_key_padding_mask = ~(proMask.to(torch.bool))
         
+        # Store encoder outputs for hierarchical skip connections
+        encoder_outputs = []
         
         e_out = src
         d_out = tgt
@@ -70,9 +75,24 @@ class MFT(nn.Module):
 
             e_out = self.e_norm(e_out)
             d_out = self.d_norm(d_out)
+            encoder_outputs.append(e_out)
             
         out = d_out.permute(1, 0, 2)
         out1 = F.log_softmax(self.linear(out), dim=-1)
+        
+        # Optional: Multi-task learning outputs
+        if return_value and self.use_value_prediction:
+            value_out = torch.sigmoid(self.valueLinear2(
+                F.relu(self.valueLinear1(out))
+            ))
+            return out1, value_out
+        
+        if return_coords and self.use_coords_prediction:
+            coords_out = self.coordsLinear2(
+                F.relu(self.coordsLinear1(out))
+            )
+            return out1, coords_out
+        
         return out1
 
 class MFTLayer(nn.Module):

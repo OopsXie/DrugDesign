@@ -1,12 +1,3 @@
-'''
-Author: QHGG
-Date: 2021-07-31 19:07:28
-LastEditTime: 2022-08-22 15:58:19
-LastEditors: QHGG
-Description: 
-FilePath: /AlphaDrug/utils/log.py
-'''
-
 import time
 import json
 import os

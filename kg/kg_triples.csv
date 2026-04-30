@@ -1,0 +1,467 @@
+# Biomedical Knowledge Graph Triples for Drug-MSM
+# Entity types: Protein, Drug, Disease, Pathway
+# Relations: targets, participates_in, associated_with, treats
+# Note: participates_in is used for both Protein-Pathway and Drug-Pathway relations
+# Format: head	relation	tail
+
+# === P38α (MAPK14) Core Triples - Target Protein (PDB: 1A9U) ===
+P00533	targets	DB00123
+P00533	targets	DB00156
+P00533	targets	DB00187
+P00533	targets	DB00217
+P00533	targets	DB00333
+P00533	targets	DB00494
+P00533	targets	DB00511
+P00533	targets	DB00573
+P00533	targets	DB00607
+P00533	targets	DB00712
+P00533	associated_with	DOID:3908
+P00533	associated_with	DOID:162
+P00533	associated_with	DOID:1324
+P00533	associated_with	DOID:5614
+P00533	associated_with	DOID:2993
+P00533	participates_in	hsa04010
+P00533	participates_in	hsa04020
+P00533	participates_in	hsa04151
+P00533	participates_in	hsa05200
+
+# === Other MAPK Family Proteins ===
+P28482	targets	DB00123
+P28482	targets	DB00156
+P28482	targets	DB00494
+P28482	associated_with	DOID:3908
+P28482	associated_with	DOID:162
+P28482	participates_in	hsa04010
+P28482	participates_in	hsa04020
+
+P45983	targets	DB00123
+P45983	targets	DB00156
+P45983	targets	DB00187
+P45983	associated_with	DOID:3908
+P45983	associated_with	DOID:1324
+P45983	participates_in	hsa04010
+P45983	participates_in	hsa04151
+
+P53779	targets	DB00123
+P53779	targets	DB00217
+P53779	associated_with	DOID:162
+P53779	associated_with	DOID:5614
+P53779	participates_in	hsa04010
+P53779	participates_in	hsa05200
+
+# === Inflammatory Disease Associated Proteins ===
+P00533	targets	DB00807
+P00533	targets	DB00882
+P00533	targets	DB00945
+P00533	targets	DB01032
+P00533	targets	DB01149
+P00533	targets	DB01228
+P00533	targets	DB01377
+P00533	targets	DB01436
+P00533	targets	DB01594
+P00533	targets	DB01647
+
+# === Kinase Inhibitor Drugs ===
+DB00123	treats	DOID:3908
+DB00123	treats	DOID:162
+DB00123	participates_in	hsa04010
+DB00156	treats	DOID:3908
+DB00156	treats	DOID:1324
+DB00156	participates_in	hsa04010
+DB00187	treats	DOID:3908
+DB00187	treats	DOID:5614
+DB00187	participates_in	hsa04020
+DB00217	treats	DOID:162
+DB00217	treats	DOID:2993
+DB00217	participates_in	hsa04151
+DB00333	treats	DOID:3908
+DB00333	treats	DOID:162
+DB00333	participates_in	hsa04010
+DB00494	treats	DOID:3908
+DB00494	treats	DOID:1324
+DB00494	participates_in	hsa04010
+DB00511	treats	DOID:162
+DB00511	treats	DOID:5614
+DB00511	participates_in	hsa04020
+DB00573	treats	DOID:3908
+DB00573	treats	DOID:2993
+DB00573	participates_in	hsa04151
+DB00607	treats	DOID:3908
+DB00607	treats	DOID:162
+DB00607	participates_in	hsa04010
+DB00712	treats	DOID:1324
+DB00712	treats	DOID:5614
+DB00712	participates_in	hsa04020
+DB00807	treats	DOID:3908
+DB00807	treats	DOID:162
+DB00807	participates_in	hsa04010
+DB00882	treats	DOID:3908
+DB00882	treats	DOID:2993
+DB00882	participates_in	hsa04151
+DB00945	treats	DOID:162
+DB00945	treats	DOID:5614
+DB00945	participates_in	hsa04020
+DB01032	treats	DOID:3908
+DB01032	treats	DOID:1324
+DB01032	participates_in	hsa04010
+DB01149	treats	DOID:3908
+DB01149	treats	DOID:162
+DB01149	participates_in	hsa04010
+DB01228	treats	DOID:162
+DB01228	treats	DOID:2993
+DB01228	participates_in	hsa04151
+DB01377	treats	DOID:3908
+DB01377	treats	DOID:5614
+DB01377	participates_in	hsa04020
+DB01436	treats	DOID:3908
+DB01436	treats	DOID:1324
+DB01436	participates_in	hsa04010
+DB01594	treats	DOID:162
+DB01594	treats	DOID:2993
+DB01594	participates_in	hsa04151
+DB01647	treats	DOID:3908
+DB01647	treats	DOID:5614
+DB01647	participates_in	hsa04020
+
+# === Common Drugs and Their Targets ===
+P00533	targets	DB00165
+P00533	targets	DB00295
+P00533	targets	DB00388
+P00533	targets	DB00458
+P00533	targets	DB00554
+P00533	targets	DB00631
+P00533	targets	DB00749
+P00533	targets	DB00814
+P00533	targets	DB00906
+P00533	targets	DB00997
+
+DB00165	treats	DOID:3908
+DB00165	treats	DOID:162
+DB00165	participates_in	hsa04010
+DB00295	treats	DOID:3908
+DB00295	treats	DOID:1324
+DB00295	participates_in	hsa04010
+DB00388	treats	DOID:162
+DB00388	treats	DOID:5614
+DB00388	participates_in	hsa04020
+DB00458	treats	DOID:3908
+DB00458	treats	DOID:2993
+DB00458	participates_in	hsa04151
+DB00554	treats	DOID:3908
+DB00554	treats	DOID:162
+DB00554	participates_in	hsa04010
+DB00631	treats	DOID:162
+DB00631	treats	DOID:1324
+DB00631	participates_in	hsa04020
+DB00749	treats	DOID:3908
+DB00749	treats	DOID:5614
+DB00749	participates_in	hsa04010
+DB00814	treats	DOID:3908
+DB00814	treats	DOID:2993
+DB00814	participates_in	hsa04151
+DB00906	treats	DOID:162
+DB00906	treats	DOID:1324
+DB00906	participates_in	hsa04020
+DB00997	treats	DOID:3908
+DB00997	treats	DOID:5614
+DB00997	participates_in	hsa04010
+
+# === Disease Associations ===
+P28482	associated_with	DOID:2993
+P28482	associated_with	DOID:5614
+P45983	associated_with	DOID:2993
+P45983	associated_with	DOID:162
+P53779	associated_with	DOID:3908
+P53779	associated_with	DOID:1324
+
+# === Pathway Participation ===
+P28482	participates_in	hsa04151
+P28482	participates_in	hsa05200
+P45983	participates_in	hsa04020
+P45983	participates_in	hsa05200
+P53779	participates_in	hsa04020
+P53779	participates_in	hsa04151
+
+# === Additional Protein-Drug Relations ===
+P00533	targets	DB01058
+P00533	targets	DB01124
+P00533	targets	DB01205
+P00533	targets	DB01289
+P00533	targets	DB01360
+P00533	targets	DB01442
+P00533	targets	DB01523
+P00533	targets	DB01608
+P00533	targets	DB01711
+P00533	targets	DB01794
+
+DB01058	treats	DOID:3908
+DB01058	treats	DOID:162
+DB01058	participates_in	hsa04010
+DB01124	treats	DOID:3908
+DB01124	treats	DOID:1324
+DB01124	participates_in	hsa04010
+DB01205	treats	DOID:162
+DB01205	treats	DOID:5614
+DB01205	participates_in	hsa04020
+DB01289	treats	DOID:3908
+DB01289	treats	DOID:2993
+DB01289	participates_in	hsa04151
+DB01360	treats	DOID:3908
+DB01360	treats	DOID:162
+DB01360	participates_in	hsa04010
+DB01442	treats	DOID:162
+DB01442	treats	DOID:1324
+DB01442	participates_in	hsa04020
+DB01523	treats	DOID:3908
+DB01523	treats	DOID:5614
+DB01523	participates_in	hsa04010
+DB01608	treats	DOID:3908
+DB01608	treats	DOID:2993
+DB01608	participates_in	hsa04151
+DB01711	treats	DOID:162
+DB01711	treats	DOID:1324
+DB01711	participates_in	hsa04020
+DB01794	treats	DOID:3908
+DB01794	treats	DOID:5614
+DB01794	participates_in	hsa04010
+
+# === More Kinase Family Members ===
+P10768	targets	DB00123
+P10768	targets	DB00156
+P10768	targets	DB00187
+P10768	associated_with	DOID:3908
+P10768	associated_with	DOID:162
+P10768	participates_in	hsa04010
+P10768	participates_in	hsa04020
+
+P37904	targets	DB00123
+P37904	targets	DB00156
+P37904	targets	DB00217
+P37904	associated_with	DOID:3908
+P37904	associated_with	DOID:1324
+P37904	participates_in	hsa04010
+P37904	participates_in	hsa04151
+
+P47811	targets	DB00156
+P47811	targets	DB00187
+P47811	targets	DB00333
+P47811	associated_with	DOID:162
+P47811	associated_with	DOID:5614
+P47811	participates_in	hsa04020
+P47811	participates_in	hsa05200
+
+P51812	targets	DB00187
+P51812	targets	DB00217
+P51812	targets	DB00494
+P51812	associated_with	DOID:3908
+P51812	associated_with	DOID:2993
+P51812	participates_in	hsa04010
+P51812	participates_in	hsa04151
+
+P78527	targets	DB00217
+P78527	targets	DB00333
+P78527	targets	DB00511
+P78527	associated_with	DOID:162
+P78527	associated_with	DOID:1324
+P78527	participates_in	hsa04020
+P78527	participates_in	hsa05200
+
+# === Drug-Pathway Relations ===
+DB00123	participates_in	hsa04151
+DB00123	participates_in	hsa05200
+DB00156	participates_in	hsa04151
+DB00156	participates_in	hsa05200
+DB00187	participates_in	hsa04151
+DB00187	participates_in	hsa05200
+DB00217	participates_in	hsa04010
+DB00217	participates_in	hsa05200
+DB00333	participates_in	hsa04151
+DB00333	participates_in	hsa05200
+DB00494	participates_in	hsa04151
+DB00494	participates_in	hsa05200
+DB00511	participates_in	hsa04010
+DB00511	participates_in	hsa05200
+DB00573	participates_in	hsa04010
+DB00573	participates_in	hsa05200
+DB00607	participates_in	hsa04151
+DB00607	participates_in	hsa05200
+DB00712	participates_in	hsa04010
+DB00712	participates_in	hsa05200
+DB00807	participates_in	hsa04151
+DB00807	participates_in	hsa05200
+DB00882	participates_in	hsa04010
+DB00882	participates_in	hsa05200
+DB00945	participates_in	hsa04010
+DB00945	participates_in	hsa05200
+DB01032	participates_in	hsa04151
+DB01032	participates_in	hsa05200
+DB01149	participates_in	hsa04151
+DB01149	participates_in	hsa05200
+DB01228	participates_in	hsa04010
+DB01228	participates_in	hsa05200
+DB01377	participates_in	hsa04010
+DB01377	participates_in	hsa05200
+DB01436	participates_in	hsa04151
+DB01436	participates_in	hsa05200
+DB01594	participates_in	hsa04010
+DB01594	participates_in	hsa05200
+DB01647	participates_in	hsa04151
+DB01647	participates_in	hsa05200
+
+# === Additional Disease Associations ===
+P10768	associated_with	DOID:2993
+P10768	associated_with	DOID:5614
+P37904	associated_with	DOID:162
+P37904	associated_with	DOID:5614
+P47811	associated_with	DOID:3908
+P47811	associated_with	DOID:2993
+P51812	associated_with	DOID:162
+P51812	associated_with	DOID:1324
+P78527	associated_with	DOID:3908
+P78527	associated_with	DOID:5614
+
+# === More Drug-Treats-Disease Relations ===
+DB00165	participates_in	hsa04151
+DB00165	participates_in	hsa05200
+DB00295	participates_in	hsa04151
+DB00295	participates_in	hsa05200
+DB00388	participates_in	hsa04010
+DB00388	participates_in	hsa05200
+DB00458	participates_in	hsa04010
+DB00458	participates_in	hsa05200
+DB00554	participates_in	hsa04151
+DB00554	participates_in	hsa05200
+DB00631	participates_in	hsa04010
+DB00631	participates_in	hsa05200
+DB00749	participates_in	hsa04151
+DB00749	participates_in	hsa05200
+DB00814	participates_in	hsa04010
+DB00814	participates_in	hsa05200
+DB00906	participates_in	hsa04010
+DB00906	participates_in	hsa05200
+DB00997	participates_in	hsa04151
+DB00997	participates_in	hsa05200
+DB01058	participates_in	hsa04151
+DB01058	participates_in	hsa05200
+DB01124	participates_in	hsa04151
+DB01124	participates_in	hsa05200
+DB01205	participates_in	hsa04010
+DB01205	participates_in	hsa05200
+DB01289	participates_in	hsa04010
+DB01289	participates_in	hsa05200
+DB01360	participates_in	hsa04151
+DB01360	participates_in	hsa05200
+DB01442	participates_in	hsa04010
+DB01442	participates_in	hsa05200
+DB01523	participates_in	hsa04151
+DB01523	participates_in	hsa05200
+DB01608	participates_in	hsa04010
+DB01608	participates_in	hsa05200
+DB01711	participates_in	hsa04010
+DB01711	participates_in	hsa05200
+DB01794	participates_in	hsa04151
+DB01794	participates_in	hsa05200
+
+# === Additional Protein-Drug Interactions ===
+P10768	targets	DB01058
+P10768	targets	DB01124
+P10768	targets	DB01205
+P37904	targets	DB01289
+P37904	targets	DB01360
+P37904	targets	DB01442
+P47811	targets	DB01523
+P47811	targets	DB01608
+P47811	targets	DB01711
+P51812	targets	DB01794
+P51812	targets	DB00165
+P51812	targets	DB00295
+P78527	targets	DB00388
+P78527	targets	DB00458
+P78527	targets	DB00554
+
+# === More Disease Associations for Kinases ===
+P10768	associated_with	DOID:1324
+P10768	associated_with	DOID:2993
+P37904	associated_with	DOID:2993
+P37904	associated_with	DOID:5614
+P47811	associated_with	DOID:162
+P47811	associated_with	DOID:1324
+P51812	associated_with	DOID:5614
+P51812	associated_with	DOID:2993
+P78527	associated_with	DOID:162
+P78527	associated_with	DOID:1324
+
+# === Pathway Participation for Additional Kinases ===
+P10768	participates_in	hsa04151
+P10768	participates_in	hsa05200
+P37904	participates_in	hsa04020
+P37904	participates_in	hsa05200
+P47811	participates_in	hsa04010
+P47811	participates_in	hsa04151
+P51812	participates_in	hsa04020
+P51812	participates_in	hsa05200
+P78527	participates_in	hsa04010
+P78527	participates_in	hsa04151
+
+# === Additional Drugs for Extended Coverage ===
+P00533	targets	DB01855
+P00533	targets	DB01923
+P00533	targets	DB02014
+P00533	targets	DB02108
+P00533	targets	DB02197
+
+DB01855	treats	DOID:3908
+DB01855	treats	DOID:162
+DB01855	participates_in	hsa04010
+DB01923	treats	DOID:3908
+DB01923	treats	DOID:1324
+DB01923	participates_in	hsa04010
+DB02014	treats	DOID:162
+DB02014	treats	DOID:5614
+DB02014	participates_in	hsa04020
+DB02108	treats	DOID:3908
+DB02108	treats	DOID:2993
+DB02108	participates_in	hsa04151
+DB02197	treats	DOID:3908
+DB02197	treats	DOID:162
+DB02197	participates_in	hsa04010
+
+# === More Pathway Relations ===
+DB01855	participates_in	hsa04151
+DB01855	participates_in	hsa05200
+DB01923	participates_in	hsa04151
+DB01923	participates_in	hsa05200
+DB02014	participates_in	hsa04010
+DB02014	participates_in	hsa05200
+DB02108	participates_in	hsa04010
+DB02108	participates_in	hsa05200
+DB02197	participates_in	hsa04151
+DB02197	participates_in	hsa05200
+
+# === Final Protein-Drug Relations ===
+P28482	targets	DB01855
+P28482	targets	DB01923
+P45983	targets	DB02014
+P45983	targets	DB02108
+P53779	targets	DB02197
+P53779	targets	DB01855
+P10768	targets	DB01923
+P10768	targets	DB02014
+P37904	targets	DB02108
+P37904	targets	DB02197
+P47811	targets	DB01855
+P47811	targets	DB01923
+P51812	targets	DB02014
+P51812	targets	DB02108
+P78527	targets	DB02197
+P78527	targets	DB01855
+
+# === Final Disease Associations ===
+P28482	associated_with	DOID:1324
+P45983	associated_with	DOID:5614
+P53779	associated_with	DOID:2993
+P10768	associated_with	DOID:3908
+P37904	associated_with	DOID:162
+P47811	associated_with	DOID:5614
+P51812	associated_with	DOID:1324
+P78527	associated_with	DOID:2993

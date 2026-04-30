@@ -8,10 +8,7 @@ import argparse
 from loguru import logger
 from rdkit import Chem
 
-from model.Lmser_Transformerr import MFT as DrugTransformer
-# from model.Transformer import MFT as DrugTransformer
-# from model.Transformer_Encoder import MFT as DrugTransformer
-
+from model import get_model_class
 from utils.docking import CaculateAffinity, ProteinParser
 from utils.log import timeLable, readSettings, VisualizeMCTS, saveMCTSRes, VisualizeInterMCTS
 from beamsearch import sample
@@ -208,13 +205,15 @@ def MCTS(rootNode):
     return rootNode.childNodes[indices], allScore, allValidSmiles, allSmiles
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='DrugMSM MCTS Search')
     parser.add_argument('-k', type=int, default=0, help='protein index')
     parser.add_argument('--device', type=str, default='0')
     parser.add_argument('-st', type=int, default=50, help='simulation times')
     parser.add_argument('--source', type=str, default='new')
     parser.add_argument('-p', type=str, default='LT', help='pretrained model')
-
+    parser.add_argument('--model_arch', type=str, default='mft',
+                       choices=['mft', 'transformer', 'encoder_only'],
+                       help='Model architecture to use')
     parser.add_argument('--max', action="store_true", help='max mode')
 
     args = parser.parse_args()
@@ -261,6 +260,8 @@ if __name__ == '__main__':
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         device_ids = [i for i in range(torch.cuda.device_count())] # 10卡机
         
+        # Load model based on architecture selection
+        DrugTransformer = get_model_class(args.model_arch)
         model = DrugTransformer(**s)
         model = torch.nn.DataParallel(model, device_ids=device_ids) # 指定要用到的设备
         model = model.to(device) # 模型加载到设备0

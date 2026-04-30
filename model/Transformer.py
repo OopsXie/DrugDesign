@@ -1,11 +1,3 @@
-'''
-Author: QHGG
-Date: 2021-11-17 18:24:36
-LastEditTime: 2022-07-14 17:16:00
-LastEditors: QHGG
-Description: original transformer encoder
-FilePath: /panas/model/Transformer_Encoder.py
-'''
 import torch
 import math
 import torch.nn as nn
@@ -18,16 +10,12 @@ class MFT(nn.Module):
         super(MFT, self).__init__()
 
         self.d_model = d_model
-        # self.proEmbedding = nn.Embedding(pro_voc_len, d_model, proPaddingIdx)
+        self.proEmbedding = nn.Embedding(pro_voc_len, d_model, proPaddingIdx)
         self.smiEmbedding = nn.Embedding(smi_voc_len, d_model, smiPaddingIdx)
         self.smiPE = PositionalEncoding(d_model, 0.1, smiMaxLen)
-        # self.proPE = PositionalEncoding(d_model, 0.1, proMaxLen)
+        self.proPE = PositionalEncoding(d_model, 0.1, proMaxLen)
 
-        # self.transformer = nn.Transformer(d_model=d_model, dim_feedforward=dim_feedforward, num_encoder_layers=num_layers, num_decoder_layers=num_layers, nhead=nhead)
-        encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward)
-        encoder_norm = nn.LayerNorm(d_model)
-        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers, encoder_norm)
-        
+        self.transformer = nn.Transformer(d_model=d_model, dim_feedforward=dim_feedforward, num_encoder_layers=num_layers, num_decoder_layers=num_layers, nhead=nhead)
         self.linear = nn.Linear(d_model, smi_voc_len)
 
         self._reset_parameters()
@@ -39,21 +27,23 @@ class MFT(nn.Module):
 
     def forward(self, src, tgt, smiMask, proMask, tgt_mask):
         tgt_mask = tgt_mask.squeeze(0)
-        # src = self.proEmbedding(src)
-        # src = self.proPE(src)
-        # src = src.permute(1, 0, 2)
+        src = self.proEmbedding(src)
+        src = self.proPE(src)
+        src = src.permute(1, 0, 2)
 
         tgt = self.smiEmbedding(tgt)
         tgt = self.smiPE(tgt)
         tgt = tgt.permute(1, 0, 2)
 
-        # src_key_padding_mask = ~(proMask.to(torch.bool))
+        src_key_padding_mask = ~(proMask.to(torch.bool))
         tgt_key_padding_mask = ~(smiMask.to(torch.bool))
-        # memory_key_padding_mask = ~(proMask.to(torch.bool))
+        memory_key_padding_mask = ~(proMask.to(torch.bool))
         
         
-        out = self.encoder(tgt, mask=tgt_mask,
-                                        src_key_padding_mask=tgt_key_padding_mask)
+        out = self.transformer(src, tgt, tgt_mask=tgt_mask,
+                                        src_key_padding_mask=src_key_padding_mask, 
+                                        tgt_key_padding_mask=tgt_key_padding_mask, 
+                                        memory_key_padding_mask=memory_key_padding_mask)
         out = out.permute(1, 0, 2)
         out1 = F.log_softmax(self.linear(out), dim=-1)
         return out1

@@ -1,13 +1,3 @@
-'''
-Author: QHGG
-Date: 2022-03-31 22:07:08
-LastEditTime: 2022-08-22 15:57:44
-LastEditors: QHGG
-Description: metrics
-FilePath: /AlphaDrug/utils/metrics.py
-'''
-
-
 import os, sys, pickle, gzip, json
 import seaborn as sn
 import matplotlib.pyplot as plt

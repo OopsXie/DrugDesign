@@ -1,11 +1,3 @@
-'''
-Author: QHGG
-Date: 2022-08-22 15:54:41
-LastEditTime: 2022-08-22 16:51:51
-LastEditors: QHGG
-Description: 
-FilePath: /AlphaDrug/train.py
-'''
 import torch
 import json
 import os
@@ -20,11 +12,9 @@ from loguru import logger
 from utils.baseline import prepareDataset
 from utils.baseline import loadConfig
 from utils.log import prepareFolder, trainingVis
-from model.Lmser_Transformerr import MFT as DrugTransformer
-# from model.Transformer import MFT as DrugTransformer
-# from model.Transformer_Encoder import MFT as DrugTransformer
+from model import get_model_class
 
-def train(model, trainLoader, smiVoc, proVoc, device):
+def train(model, trainLoader, smiVoc, proVoc, device, device_ids):
     batch = len(trainLoader)
     totalLoss = 0.0
     totalAcc = 0.0
@@ -35,9 +25,10 @@ def train(model, trainLoader, smiVoc, proVoc, device):
         smiMask = torch.as_tensor(smiMask).to(device)
         label = torch.as_tensor(label).to(device)
         
-        tgt_mask = nn.Transformer.generate_square_subsequent_mask(smile.shape[1]).tolist()
-        tgt_mask = [tgt_mask] * len(device_ids)
-        tgt_mask = torch.as_tensor(tgt_mask).to(device)
+        tgt_mask = nn.Transformer.generate_square_subsequent_mask(smile.shape[1]).to(device)
+        # For single device, no need to replicate mask
+        if len(device_ids) == 1:
+            tgt_mask = tgt_mask.unsqueeze(0)
         
         out = model(protein, smile, smiMask, proMask, tgt_mask)
         # tgt = torch.argmax(out, dim=-1)
@@ -61,7 +52,7 @@ def train(model, trainLoader, smiVoc, proVoc, device):
 
 
 @torch.no_grad()
-def valid(model, validLoader, smiVoc, proVoc, device):
+def valid(model, validLoader, smiVoc, proVoc, device, device_ids):
     model.eval()
     
     batch = len(validLoader)
@@ -74,9 +65,10 @@ def valid(model, validLoader, smiVoc, proVoc, device):
         smiMask = torch.as_tensor(smiMask).to(device)
         label = torch.as_tensor(label).to(device)
         
-        tgt_mask = nn.Transformer.generate_square_subsequent_mask(smile.shape[1]).tolist()
-        tgt_mask = [tgt_mask] * len(device_ids)
-        tgt_mask = torch.as_tensor(tgt_mask).to(device)
+        tgt_mask = nn.Transformer.generate_square_subsequent_mask(smile.shape[1]).to(device)
+        # For single device, no need to replicate mask
+        if len(device_ids) == 1:
+            tgt_mask = tgt_mask.unsqueeze(0)
 
         out = model(protein, smile, smiMask, proMask, tgt_mask)
         
@@ -98,15 +90,18 @@ def valid(model, validLoader, smiVoc, proVoc, device):
     
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='settings')
+    parser = argparse.ArgumentParser(description='DrugMSM Training')
     
     parser.add_argument('--layers', type=int, default=4, help='transformer layers')
-    parser.add_argument('-l', action="store_true", help='learning rate')
-    parser.add_argument('--epoch', type=int, default=501, help='epochs')
-    parser.add_argument('--device', type=str, default='0', help='device')
+    parser.add_argument('--model_arch', type=str, default='mft', 
+                       choices=['mft', 'transformer', 'encoder_only'],
+                       help='Model architecture to use')
+    parser.add_argument('-l', action="store_true", help='enable learning rate scheduler')
+    parser.add_argument('--epoch', type=int, default=501, help='number of epochs')
+    parser.add_argument('--device', type=str, default='0', help='device ID(s)')
     parser.add_argument('--pretrain', type=str, default='', help='pretrain model path')
-    parser.add_argument('--bs', type=int, default=32, help='bs')
-    parser.add_argument('--note', type=str, default='', help='note')
+    parser.add_argument('--bs', type=int, default=32, help='batch size')
+    parser.add_argument('--note', type=str, default='', help='experiment note')
     args = parser.parse_args()
 
     startTime = time.time()
@@ -148,6 +143,8 @@ if __name__ == '__main__':
     with open((exp_folder + 'settings.json'), 'w') as f:
         json.dump(settings, f)
 
+    # Load model based on architecture selection
+    DrugTransformer = get_model_class(args.model_arch)
     model = DrugTransformer(**settings)
     model = torch.nn.DataParallel(model, device_ids=device_ids) # 指定要用到的设备
     model = model.to(device) # 模型加载到设备0
@@ -170,10 +167,10 @@ if __name__ == '__main__':
 
     for i in range(epoch):
         logger.info('EPOCH: {} 训练'.format(i))
-        d1 = train(model, trainLoader, config.smiVoc, config.proVoc, device)
+        d1 = train(model, trainLoader, config.smiVoc, config.proVoc, device, device_ids)
         
         logger.info('EPOCH: {} 验证'.format(i))
-        d2  = valid(model, validLoader, config.smiVoc, config.proVoc, device)
+        d2  = valid(model, validLoader, config.smiVoc, config.proVoc, device, device_ids)
         
         logdf = logdf.append(pd.DataFrame([d1+d2], columns=columns), ignore_index=True)
         trainingVis(logdf, batchSize, lr, vis_folder)

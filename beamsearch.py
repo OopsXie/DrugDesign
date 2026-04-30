@@ -1,11 +1,3 @@
-'''
-Author: QHGG
-Date: 2021-08-02 22:24:17
-LastEditTime: 2022-08-22 16:49:40
-LastEditors: QHGG
-Description: 
-FilePath: /AlphaDrug/beamsearch.py
-'''
 import numpy as np
 import torch
 import json
@@ -15,10 +7,7 @@ import os
 import argparse
 from torch import nn
 from utils.log import timeLable
-from model.Lmser_Transformerr import MFT as DrugTransformer
-# from model.Transformer import MFT as DrugTransformer
-# from model.Transformer_Encoder import MFT as DrugTransformer
-
+from model import get_model_class
 from rdkit import Chem
 from loguru import logger
 from utils.docking import CaculateAffinity, ProteinParser
@@ -99,14 +88,16 @@ def sample(model, path, vocabulary, proVoc, smiMaxLen, proMaxLen, device, sample
     return atomListExpanded, logpListExpanded
 
 # @logger.catch
-def BeamSearch(experimentId, modelName, root, k, beamSize=10):
+def BeamSearch(experimentId, modelName, root, k, beamSize=10, model_arch='mft'):
     device = torch.device("cuda:"+args.device if torch.cuda.is_available() else "cpu")
 
     device_ids = [int(args.device)] # 10卡机
 
     with open(os.path.join(experimentId, 'settings.json'), 'r') as f:
         s = json.load(f)
-        
+    
+    # Load model based on architecture selection
+    DrugTransformer = get_model_class(model_arch)
     model = DrugTransformer(**s)
     model = torch.nn.DataParallel(model, device_ids=device_ids) # 指定要用到的设备
     if torch.cuda.is_available():
@@ -166,12 +157,15 @@ def BeamSearch(experimentId, modelName, root, k, beamSize=10):
     return allScore
     
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-k', type=int, default=0)
-    parser.add_argument('--device', type=str, default='0,1')
-    parser.add_argument('-bs', type=int, default=10)
-    parser.add_argument('--source', type=str, default='new')
+    parser = argparse.ArgumentParser(description='DrugMSM Beam Search')
+    parser.add_argument('-k', type=int, default=0, help='protein index')
+    parser.add_argument('--device', type=str, default='0,1', help='device ID(s)')
+    parser.add_argument('-bs', type=int, default=10, help='beam size')
+    parser.add_argument('--source', type=str, default='new', help='data source')
     parser.add_argument('-p', type=str, default='LT', help='pretrained model')
+    parser.add_argument('--model_arch', type=str, default='mft',
+                       choices=['mft', 'transformer', 'encoder_only'],
+                       help='Model architecture to use')
 
     args = parser.parse_args()
 
@@ -201,7 +195,7 @@ if __name__ == '__main__':
     if len(protein_seq) > 999:
         logger.info('skipping %s'%test_pdblist[args.k])
     else:
-        score = BeamSearch(experimentId, m, resFolderPath, args.k, beamSize=beamSize)
+        score = BeamSearch(experimentId, m, resFolderPath, args.k, beamSize=beamSize, model_arch=args.model_arch)
             
     ET = time.time()
     logger.info('time {}'.format((ET-ST)//60))
