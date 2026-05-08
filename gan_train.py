@@ -970,13 +970,13 @@ def main():
     parser.add_argument('--num-decoder-layers', type=int, default=12, help='Number of generator decoder layers')
     parser.add_argument('--num-disc-layers', type=int, default=6, help='Number of discriminator encoder layers')
     parser.add_argument('--dim-feedforward', type=int, default=1024, help='Feedforward dimension')
-    parser.add_argument('--noise-dim', type=int, default=128, help='Noise vector dimension')
+    parser.add_argument('--noise-dim', type=int, default=756, help='Noise vector dimension')
     parser.add_argument('--mask-rate', type=float, default=0.15, help='MLM mask rate')
     
 
     parser.add_argument('--lambda-gan', type=float, default=1.0, help='GAN loss weight')
     parser.add_argument('--lambda-bio', type=float, default=0.5, help='Biology loss weight')
-    parser.add_argument('--lambda-chem', type=float, default=0.5, help='Chemical validity loss weight')
+    parser.add_argument('--lambda-chem', type=float, default=0.3, help='Chemical validity loss weight')
     
 
     parser.add_argument('--data-dir', type=str, default='./data', help='Data directory')

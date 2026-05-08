@@ -224,15 +224,118 @@ def compute_mol_properties(smiles_list: List[str]) -> Dict[str, List[float]]:
 def compute_uniqueness(smiles_list: List[str]) -> float:
     """
     Compute uniqueness metric for a list of SMILES strings.
-    
+
     Args:
         smiles_list: List of SMILES strings
-        
+
     Returns:
         Uniqueness ratio (unique_smiles / total_smiles)
     """
     if len(smiles_list) == 0:
         return 0.0
-    
+
     unique_smiles = set(smiles_list)
     return len(unique_smiles) / len(smiles_list)
+
+
+def compute_validity(generated_smiles: List[str]) -> float:
+    """
+    Compute validity ratio: fraction of SMILES that RDKit can parse.
+
+    Args:
+        generated_smiles: List of generated SMILES strings
+
+    Returns:
+        Validity ratio in [0, 1]
+    """
+    if len(generated_smiles) == 0:
+        return 0.0
+
+    valid_count = 0
+    for smi in generated_smiles:
+        mol = Chem.MolFromSmiles(smi)
+        if mol is not None:
+            valid_count += 1
+    return valid_count / len(generated_smiles)
+
+
+def compute_novelty(valid_smiles: List[str], training_smiles: set) -> float:
+    """
+    Compute novelty ratio: fraction of valid SMILES not seen in training set.
+
+    Args:
+        valid_smiles: List of valid canonical SMILES
+        training_smiles: Set of training SMILES for comparison
+
+    Returns:
+        Novelty ratio in [0, 1]
+    """
+    if len(valid_smiles) == 0:
+        return 0.0
+
+    novel_count = 0
+    for smi in valid_smiles:
+        canonical = Chem.MolToSmiles(Chem.MolFromSmiles(smi), canonical=True) if Chem.MolFromSmiles(smi) else smi
+        if canonical not in training_smiles:
+            novel_count += 1
+    return novel_count / len(valid_smiles)
+
+
+def compute_all_metrics(
+    generated_smiles: List[str],
+    training_smiles: Optional[set] = None,
+) -> Dict[str, float]:
+    """
+    Compute all generation quality metrics in one call.
+
+    Args:
+        generated_smiles: List of generated SMILES strings
+        training_smiles: Optional set of training SMILES for novelty computation
+
+    Returns:
+        Dictionary with keys: validity, uniqueness, novelty, mean_qed, mean_sa, mean_logp
+    """
+    # Validity
+    valid_mols = []
+    valid_smiles = []
+    for smi in generated_smiles:
+        mol = Chem.MolFromSmiles(smi)
+        if mol is not None:
+            valid_mols.append(mol)
+            valid_smiles.append(smi)
+
+    total = len(generated_smiles)
+    validity = len(valid_mols) / total if total > 0 else 0.0
+
+    # Uniqueness (among valid)
+    unique_smiles = set(valid_smiles)
+    uniqueness = len(unique_smiles) / len(valid_smiles) if len(valid_smiles) > 0 else 0.0
+
+    # Novelty
+    if training_smiles is not None and len(valid_smiles) > 0:
+        novel_count = 0
+        for smi in unique_smiles:
+            if smi not in training_smiles:
+                novel_count += 1
+        novelty = novel_count / len(unique_smiles)
+    else:
+        novelty = -1.0  # Not computed
+
+    # Property averages (among valid molecules)
+    qed_vals, sa_vals, logp_vals = [], [], []
+    for mol in valid_mols:
+        qed_vals.append(QED.qed(mol))
+        sa_vals.append(compute_sa_score(mol))
+        logp_vals.append(Descriptors.MolLogP(mol))
+
+    return {
+        'validity': validity,
+        'uniqueness': uniqueness,
+        'novelty': novelty,
+        'mean_qed': float(np.mean(qed_vals)) if qed_vals else 0.0,
+        'mean_sa': float(np.mean(sa_vals)) if sa_vals else 0.0,
+        'mean_logp': float(np.mean(logp_vals)) if logp_vals else 0.0,
+        'num_valid': len(valid_mols),
+        'num_unique': len(unique_smiles),
+        'num_total': total,
+    }

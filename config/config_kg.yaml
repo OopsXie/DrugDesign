@@ -1,0 +1,71 @@
+# ============================================================
+# KG-DrugGAN-MSM 配置文件（第4章）
+# 对应训练脚本: kg_gan_train.py
+# ============================================================
+
+# ---- 项目设置 ----
+project:
+  name: "KG-DrugGAN-MSM"
+  seed: 42
+  device: "0"
+  output_dir: "./experiments/kg_druggan_msm"
+
+# ---- 数据设置 ----
+data:
+  data_dir: "./data"
+  train_val_split: "./data/train-val-split.json"
+  train_val_data: "./data/train-val-data.tsv"
+  test_pdbs_dir: "./data/test_pdbs"
+
+# ---- 模型参数（与DrugGAN-MSM共享） ----
+model:
+  d_model: 512
+  nhead: 8
+  num_layers: 12
+  num_decoder_layers: 12
+  num_disc_layers: 6
+  dim_feedforward: 1024
+  noise_dim: 756
+  output_dim: 756
+  mask_rate: 0.15
+  dropout: 0.1
+
+# ---- 训练参数 ----
+training:
+  epochs: 200
+  batch_size: 64
+  lr: 0.0001
+  n_critic: 1
+  teacher_forcing: true
+  patience: 10
+  save_every: 10
+
+  # 损失权重
+  lambda_gan: 1.0
+  lambda_bio: 0.5
+  lambda_chem: 0.3
+  alpha: 0.5                     # 多性质监督权重
+  beta: 0.5                      # 知识一致性约束权重
+
+  # 学习率调度
+  lr_scheduler: "cosine"
+  lr_min: 1e-6
+  lr_patience: 5
+
+  # 梯度裁剪
+  grad_clip_norm: 1.0
+
+  resume: ""
+
+# ---- 知识图谱参数（KG-DrugGAN-MSM专用） ----
+knowledge_graph:
+  triples_path: "./kg/kg_triples.csv"
+  embedding_dim: 100             # TransE嵌入维度
+  kg_epochs: 100                 # TransE预训练轮数
+  kg_lr: 0.01                    # TransE学习率
+  kg_margin: 1.0                 # TransE间隔
+  kg_batch_size: 512
+  kg_negative_samples: 1         # 负采样数
+  neighborhood_k: 1              # k-hop邻域
+  topk_neighbors: 50             # 每种关系最大邻居数
+  kg_pretrained_path: ""         # 预训练TransE模型路径，空则从头训练

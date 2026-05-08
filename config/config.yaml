@@ -1,0 +1,57 @@
+# ============================================================
+# DrugGAN-MSM 配置文件（第3章）
+# 对应训练脚本: gan_train.py
+# ============================================================
+
+# ---- 项目设置 ----
+project:
+  name: "DrugGAN-MSM"
+  seed: 42
+  device: "0"                    # GPU ID
+  output_dir: "./experiments/druggan_msm"
+
+# ---- 数据设置 ----
+data:
+  data_dir: "./data"
+  train_val_split: "./data/train-val-split.json"
+  train_val_data: "./data/train-val-data.tsv"
+  test_pdbs_dir: "./data/test_pdbs"
+
+# ---- 模型参数 ----
+model:
+  d_model: 512
+  nhead: 8
+  num_layers: 12                 # 蛋白质/分子编码器层数
+  num_decoder_layers: 12         # 生成器解码器层数
+  num_disc_layers: 6             # 判别器层数
+  dim_feedforward: 1024
+  noise_dim: 756                 # 噪声向量维度（与条件维度对齐）
+  output_dim: 756                # 蛋白质/分子特征输出维度
+  mask_rate: 0.15                # MLM掩码概率
+  dropout: 0.1
+
+# ---- 训练参数 ----
+training:
+  epochs: 200
+  batch_size: 64
+  lr: 0.0001                     # Adam学习率
+  n_critic: 1                    # 判别器每步更新次数
+  teacher_forcing: true
+  patience: 10                   # 早停耐心值
+  save_every: 10                 # 每N个epoch保存checkpoint
+
+  # 损失权重（对齐论文）
+  lambda_gan: 1.0                # λ1: 对抗损失权重
+  lambda_bio: 0.5                # λ2: 生物属性损失权重
+  lambda_chem: 0.3               # λ3: 化学有效性损失权重（论文值）
+
+  # 学习率调度（新增）
+  lr_scheduler: "cosine"         # cosine / plateau / none
+  lr_min: 1e-6                   # 最小学习率（cosine用）
+  lr_patience: 5                 # plateau耐心值
+
+  # 梯度裁剪（新增）
+  grad_clip_norm: 1.0
+
+  # 恢复训练
+  resume: ""                     # checkpoint路径，空则从头训练
